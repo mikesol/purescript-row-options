@@ -47,7 +47,7 @@ import Prelude
 import Data.Function.Uncurried (runFn2)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import Heterogeneous.Mapping (class HMap, class HMapWithIndex, class MappingWithIndex, ConstMapping(..), hmapWithIndex, mappingWithIndex)
+import Heterogeneous.Mapping (class HMap, class HMapWithIndex, class MappingWithIndex, ConstMapping(..), mappingWithIndex)
 import Prim.Row (class Cons, class Lacks, class Nub, class Union)
 import Prim.Row as R
 import Prim.Row as Row
