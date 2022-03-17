@@ -81,7 +81,7 @@ instance showRowOptions ::
   , ShowFields rs r
   ) =>
   Show (RowOptions r) where
-  show a = "RowOptions (" <>showFields (Proxy :: Proxy rs) a <> ")"
+  show a = "RowOptions (" <> showFields (Proxy :: Proxy rs) a <> ")"
 
 options :: forall r1 r2 r3. R.Union r1 r2 r3 => { | r1 } -> RowOptions r3
 options = unsafeCoerce
@@ -252,9 +252,11 @@ instance showFieldsCons ::
   , ShowFields tail row
   ) =>
   ShowFields (Cons name ty tail) row where
-  showFields _ a =  (case v' of
-    Nothing -> ""
-    Just x -> (reflectSymbol (Proxy :: _ name) <> ": " <> show x)) <> showFields (Proxy :: Proxy tail) a
+  showFields _ a =
+    ( case v' of
+        Nothing -> ""
+        Just x -> (reflectSymbol (Proxy :: _ name) <> ": " <> show x)
+    ) <> showFields (Proxy :: Proxy tail) a
     where
     v' = get (Proxy :: Proxy name) a
 
@@ -262,7 +264,6 @@ instance showFieldsNil :: ShowFields Nil row where
   showFields _ _ = ""
 
 ------------------ builder
-
 
 foreign import bcopyRowOptions :: forall r1. RowOptions r1 -> RowOptions r1
 foreign import bunsafeInsert :: forall a r1 r2. String -> a -> RowOptions r1 -> RowOptions r2
@@ -307,13 +308,14 @@ b'modify l f = Builder \r1 -> bunsafeModify (reflectSymbol l) f r1
 b'delete
   :: forall l a r1 r2
    . IsSymbol l
-   => Row.Lacks l r1
-   => Row.Cons l a r1 r2
-   => Proxy l
-   -> Builder (RowOptions r2) (RowOptions r1)
+  => Row.Lacks l r1
+  => Row.Cons l a r1 r2
+  => Proxy l
+  -> Builder (RowOptions r2) (RowOptions r1)
 b'delete l = Builder \r2 -> bunsafeDelete (reflectSymbol l) r2
 
-b'rename :: forall l1 l2 a r1 r2 r3
+b'rename
+  :: forall l1 l2 a r1 r2 r3
    . IsSymbol l1
   => IsSymbol l2
   => Row.Cons l1 a r2 r1
@@ -325,7 +327,6 @@ b'rename :: forall l1 l2 a r1 r2 r3
   -> Builder (RowOptions r1) (RowOptions r3)
 b'rename l1 l2 = Builder \r1 -> bunsafeRename (reflectSymbol l1) (reflectSymbol l2) r1
 
-
 b'merge
   :: forall r1 r2 r3 r4
    . Row.Union r1 r2 r3
@@ -333,7 +334,6 @@ b'merge
   => RowOptions r1
   -> Builder (RowOptions r2) (RowOptions r4)
 b'merge r1 = Builder \r2 -> unsafeCoerce (runFn2 unsafeUnionFn (unsafeCoerce r1) (unsafeCoerce r2))
-
 
 b'union
   :: forall r1 r2 r3
@@ -423,8 +423,8 @@ class RowListKeys (r :: RowList Type) where
 instance rowListKeysNil :: RowListKeys RL.Nil where
   rowListKeys _ = []
 
-instance rowListKeysCons :: (IsSymbol sym,  RowListKeys rest) => RowListKeys (RL.Cons sym a rest) where
-  rowListKeys _ = [reflectSymbol (Proxy :: _ sym)] <> rowListKeys (Proxy :: _ rest)
+instance rowListKeysCons :: (IsSymbol sym, RowListKeys rest) => RowListKeys (RL.Cons sym a rest) where
+  rowListKeys _ = [ reflectSymbol (Proxy :: _ sym) ] <> rowListKeys (Proxy :: _ rest)
 
 feelingLucky :: forall r1 rl1 r2 r3. Union r1 r2 r3 => RL.RowToList r1 rl1 => RowListKeys rl1 => RowOptions r3 -> Maybe { | r1 }
-feelingLucky ro= if rowListKeys (Proxy :: _ rl1) == unsafeKeys ro then Just (unsafeCoerce ro) else Nothing
+feelingLucky ro = if rowListKeys (Proxy :: _ rl1) == unsafeKeys ro then Just (unsafeCoerce ro) else Nothing

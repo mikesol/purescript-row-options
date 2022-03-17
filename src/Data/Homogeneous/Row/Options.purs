@@ -42,11 +42,11 @@ newtype Homogeneous (row ∷ Row Type) a = Homogeneous (Foreign.Object a)
 -- | `ra` `Row` is known and you
 -- | want to derive `sl` and `a`
 -- | from it.
-homogeneous ∷
-  ∀ a ra ls.
-  HomogeneousRowLabels ra a ls ⇒
-  RowOptions ra →
-  Homogeneous ls a
+homogeneous
+  ∷ ∀ a ra ls
+  . HomogeneousRowLabels ra a ls
+  ⇒ RowOptions ra
+  → Homogeneous ls a
 homogeneous r =
   Homogeneous
     -- | Why this doesn't work? I have no clue.
@@ -58,29 +58,29 @@ homogeneous r =
 homogeneous' ∷ ∀ a ra ls. ToHomogeneousRow ls a ra ⇒ RowOptions ra → Homogeneous ls a
 homogeneous' = Homogeneous <<< unsafeCoerce
 
-fromHomogeneous ∷
-  ∀ a ra ls.
-  ToHomogeneousRow ls a ra ⇒
-  Homogeneous ls a →
-  RowOptions ra
+fromHomogeneous
+  ∷ ∀ a ra ls
+  . ToHomogeneousRow ls a ra
+  ⇒ Homogeneous ls a
+  → RowOptions ra
 fromHomogeneous (Homogeneous obj) = unsafeCoerce obj
 
-get ∷
-  ∀ a ra ls.
-  ToHomogeneousRow ls a ra ⇒
-  Homogeneous ls a →
-  (RowOptions ra → a) →
-  a
+get
+  ∷ ∀ a ra ls
+  . ToHomogeneousRow ls a ra
+  ⇒ Homogeneous ls a
+  → (RowOptions ra → a)
+  → a
 get h f = f (fromHomogeneous h)
 
-modify ∷
-  ∀ a ra ls.
-  Row.Homogeneous ra a ⇒
-  ToHomogeneousRow ls a ra ⇒
-  HomogeneousRowLabels ra a ls ⇒
-  Homogeneous ls a →
-  (RowOptions ra -> RowOptions ra) →
-  Homogeneous ls a
+modify
+  ∷ ∀ a ra ls
+  . Row.Homogeneous ra a
+  ⇒ ToHomogeneousRow ls a ra
+  ⇒ HomogeneousRowLabels ra a ls
+  ⇒ Homogeneous ls a
+  → (RowOptions ra -> RowOptions ra)
+  → Homogeneous ls a
 modify h f = homogeneous (f (fromHomogeneous h))
 
 derive instance eqHomogeneous ∷ Eq a ⇒ Eq (Homogeneous sl a)
