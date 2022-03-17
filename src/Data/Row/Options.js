@@ -67,3 +67,13 @@ exports.unsafeMegamap = function (r1) {
 		return copy;
 	};
 };
+
+exports.unsafeKeys = function (r1) {
+	var copy = [];
+	for (var key in r1) {
+		if (Object.hasOwnProperty.call(r1, key)) {
+			copy.push(key);
+		}
+	}
+	return copy;
+}

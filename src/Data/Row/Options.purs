@@ -35,6 +35,9 @@ module Data.Row.Options
   , class MapRowOptionsWithIndex
   , mapRowOptionsWithIndexBuilder
   , asOptions
+  , feelingLucky
+  , class RowListKeys
+  , rowListKeys
   --
   , unsafeOptionsGet
   ) where
@@ -44,8 +47,8 @@ import Prelude
 import Data.Function.Uncurried (runFn2)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import Heterogeneous.Mapping (class HMap, class HMapWithIndex, class MappingWithIndex, ConstMapping(..), mappingWithIndex)
-import Prim.Row (class Lacks, class Cons, class Nub, class Union)
+import Heterogeneous.Mapping (class HMap, class HMapWithIndex, class MappingWithIndex, ConstMapping(..), hmapWithIndex, mappingWithIndex)
+import Prim.Row (class Cons, class Lacks, class Nub, class Union)
 import Prim.Row as R
 import Prim.Row as Row
 import Prim.RowList (class RowToList, Cons, Nil, RowList)
@@ -411,3 +414,17 @@ megamap = unsafeMegamap
 -- util
 asOptions :: forall r. { | r } -> RowOptions r
 asOptions = unsafeCoerce
+
+foreign import unsafeKeys :: forall r. RowOptions r -> Array String
+
+class RowListKeys (r :: RowList Type) where
+  rowListKeys :: forall proxy. proxy r -> Array String
+
+instance rowListKeysNil :: RowListKeys RL.Nil where
+  rowListKeys _ = []
+
+instance rowListKeysCons :: (IsSymbol sym,  RowListKeys rest) => RowListKeys (RL.Cons sym a rest) where
+  rowListKeys _ = [reflectSymbol (Proxy :: _ sym)] <> rowListKeys (Proxy :: _ rest)
+
+feelingLucky :: forall r1 rl1 r2 r3. Union r1 r2 r3 => RL.RowToList r1 rl1 => RowListKeys rl1 => RowOptions r3 -> Maybe { | r1 }
+feelingLucky ro= if rowListKeys (Proxy :: _ rl1) == unsafeKeys ro then Just (unsafeCoerce ro) else Nothing
