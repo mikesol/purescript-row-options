@@ -14,7 +14,7 @@ import Data.FoldableWithIndex (class FoldableWithIndex, foldlWithIndex)
 import Data.Homogeneous (class HomogeneousRowLabels, class Keys, class ToHomogeneousRow, keysImpl)
 import Data.List (catMaybes) as List
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Row.Options (unsafeOptionsGet)
+import Data.Row.Options (RowOptions, unsafeOptionsGet)
 import Data.Semigroup.Foldable (class Foldable1, foldMap1DefaultL, foldr1Default)
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Traversable (class Traversable)
@@ -45,7 +45,7 @@ newtype Homogeneous (row ∷ Row Type) a = Homogeneous (Foreign.Object a)
 homogeneous ∷
   ∀ a ra ls.
   HomogeneousRowLabels ra a ls ⇒
-  { | ra } →
+  RowOptions ra →
   Homogeneous ls a
 homogeneous r =
   Homogeneous
@@ -55,21 +55,21 @@ homogeneous r =
 
 -- | When you already have `Row` of labels and `a` at hand and want to derive row
 -- | from them you can use this constructor instead.
-homogeneous' ∷ ∀ a ra ls. ToHomogeneousRow ls a ra ⇒ Record ra → Homogeneous ls a
+homogeneous' ∷ ∀ a ra ls. ToHomogeneousRow ls a ra ⇒ RowOptions ra → Homogeneous ls a
 homogeneous' = Homogeneous <<< unsafeCoerce
 
 fromHomogeneous ∷
   ∀ a ra ls.
   ToHomogeneousRow ls a ra ⇒
   Homogeneous ls a →
-  { | ra }
+  RowOptions ra
 fromHomogeneous (Homogeneous obj) = unsafeCoerce obj
 
 get ∷
   ∀ a ra ls.
   ToHomogeneousRow ls a ra ⇒
   Homogeneous ls a →
-  ({ | ra } → a) →
+  (RowOptions ra → a) →
   a
 get h f = f (fromHomogeneous h)
 
@@ -79,7 +79,7 @@ modify ∷
   ToHomogeneousRow ls a ra ⇒
   HomogeneousRowLabels ra a ls ⇒
   Homogeneous ls a →
-  ({ | ra } → { | ra }) →
+  (RowOptions ra -> RowOptions ra) →
   Homogeneous ls a
 modify h f = homogeneous (f (fromHomogeneous h))
 
