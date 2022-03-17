@@ -1,6 +1,6 @@
-purescript-row-options
+# purescript-row-options
 
-Like `purescript-options`, but uses rows.
+Like [`purescript-options`](https://pursuit.purescript.org/packages/purescript-options), but uses rows.
 
 Like a variant, but with potentially more or less stuff.
 
