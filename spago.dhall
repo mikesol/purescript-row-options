@@ -19,6 +19,7 @@ to generate this file without the comments in this block.
   , "homogeneous"
   , "lists"
   , "maybe"
+  , "ordered-collections"
   , "partial"
   , "prelude"
   , "record"

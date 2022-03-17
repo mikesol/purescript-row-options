@@ -46,6 +46,7 @@ import Prelude
 
 import Data.Function.Uncurried (runFn2)
 import Data.Maybe (Maybe(..))
+import Data.Set (fromFoldable)
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Heterogeneous.Mapping (class HMap, class HMapWithIndex, class MappingWithIndex, ConstMapping(..), mappingWithIndex)
 import Prim.Row (class Cons, class Lacks, class Nub, class Union)
@@ -427,4 +428,4 @@ instance rowListKeysCons :: (IsSymbol sym, RowListKeys rest) => RowListKeys (RL.
   rowListKeys _ = [ reflectSymbol (Proxy :: _ sym) ] <> rowListKeys (Proxy :: _ rest)
 
 feelingLucky :: forall r1 rl1 r2 r3. Union r1 r2 r3 => RL.RowToList r1 rl1 => RowListKeys rl1 => RowOptions r3 -> Maybe { | r1 }
-feelingLucky ro = if rowListKeys (Proxy :: _ rl1) == unsafeKeys ro then Just (unsafeCoerce ro) else Nothing
+feelingLucky ro = if fromFoldable (rowListKeys (Proxy :: _ rl1)) == fromFoldable (unsafeKeys ro) then Just (unsafeCoerce ro) else Nothing
