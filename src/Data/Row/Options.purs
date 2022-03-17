@@ -34,6 +34,7 @@ module Data.Row.Options
   , class MegamapRowOptions
   , class MapRowOptionsWithIndex
   , mapRowOptionsWithIndexBuilder
+  , asOptions
   --
   , unsafeOptionsGet
   ) where
@@ -406,3 +407,7 @@ instance megamapRowOptionsCons :: (Row.Cons sym a r1' r1, Row.Cons sym b r3' r3,
 
 megamap :: forall r1 r2 rl2 r3. RL.RowToList r2 rl2 => MegamapRowOptions r1 rl2 r3 => RowOptions r1 -> { | r2 } -> RowOptions r3
 megamap = unsafeMegamap
+
+-- util
+asOptions :: forall r. { | r } -> RowOptions r
+asOptions = unsafeCoerce
