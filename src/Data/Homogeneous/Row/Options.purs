@@ -2,6 +2,7 @@ module Data.Homogeneous.Row.Options
   ( homogeneous
   , homogeneous'
   , Homogeneous
+  , objFromHomogeneous
   , fromHomogeneous
   , modify
   , get
@@ -64,6 +65,13 @@ fromHomogeneous
   ⇒ Homogeneous ls a
   → RowOptions ra
 fromHomogeneous (Homogeneous obj) = unsafeCoerce obj
+
+objFromHomogeneous
+  ∷ ∀ a ra ls
+  . ToHomogeneousRow ls a ra
+  ⇒ Homogeneous ls a
+  → Foreign.Object a
+objFromHomogeneous (Homogeneous obj) = obj
 
 get
   ∷ ∀ a ra ls
