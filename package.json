@@ -1,0 +1,17 @@
+{
+  "name": "purescript-row-options",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "spago -x test.dhall test"
+  },
+  "keywords": [],
+  "author": "Mike Solomon",
+  "license": "ISC",
+  "devDependencies": {
+    "purescript": "^0.14.7",
+    "purs-tidy": "^0.7.1",
+    "spago": "^0.20.7"
+  }
+}
